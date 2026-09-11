@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#003d27">
+<title>1Milyar.com — Multi Device</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#111718;color:#f5f7f7;font-family:Arial,sans-serif}
+header{background:#003d27;padding:12px 14px;position:sticky;top:0;z-index:5}
+.brand{font-size:20px;font-weight:800}.top{display:flex;gap:12px;overflow:auto;margin-top:14px}
+.nav{border:0;background:transparent;color:#eee;font-size:16px;font-weight:700;padding:11px 16px;border-radius:18px;white-space:nowrap}.nav.active{background:#087b45}
+.search{background:#202020;border-bottom:1px solid #555;padding:13px;display:flex;align-items:center;gap:12px;font-size:18px}.search input{flex:1;background:transparent;border:0;color:white;font-size:17px;outline:0}
+main{padding:20px 18px 90px}.hero{background:#002d14;border-radius:32px;padding:30px 26px;margin-bottom:26px}.hero h1{font-size:32px;margin:0 0 5px}.hero h2{font-size:26px;margin:35px 0 10px}.hero p{font-size:18px;line-height:1.4;margin:0}.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:28px}.chip{border:1px solid #164a31;border-radius:25px;padding:12px 16px;font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{min-height:190px;border-radius:30px;padding:24px}.green{background:#005718}.blue{background:#062596}.purple{background:#27009b}.red{background:#810b00}.card .title{font-size:18px}.value{font-size:32px;font-weight:800;margin:18px 0 8px}.sub{font-size:17px;line-height:1.3}
+section{display:none}.tablebox{background:#202324;border-radius:18px;padding:15px;overflow:auto}button.primary{background:#087b45;color:white;border:0;padding:12px 18px;border-radius:12px;font-weight:700}
+input,select{padding:12px;border-radius:10px;border:1px solid #555;background:#171919;color:white;margin:5px 0;width:100%}
+.form{background:#202324;padding:18px;border-radius:18px;margin-bottom:15px}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#222;border-top:1px solid #555;display:flex;justify-content:space-around;padding:9px 3px;z-index:10}.bottom button{background:none;border:0;color:#aeb7ba;font-weight:700;font-size:12px}.bottom button.active{color:#62e0bd}
+@media(max-width:420px){.hero{padding:25px 20px}.hero h1{font-size:28px}.grid{gap:12px}.card{padding:18px;min-height:170px}.value{font-size:28px}}
+</style>
+</head>
+<body>
+<div id="loginScreen" style="position:fixed;inset:0;background:#07100d;z-index:999;display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="width:min(420px,100%);background:#0d261b;border-radius:28px;padding:28px;box-shadow:0 20px 60px #0008">
+    <div style="font-size:30px;font-weight:800;margin-bottom:8px">📈 1Milyar.com</div>
+    <div style="color:#b8c7c1;margin-bottom:24px">Login akun untuk menggunakan aplikasi</div>
+    <input id="loginEmail" type="email" placeholder="Email">
+    <input id="loginPassword" type="password" placeholder="Password">
+    <button class="primary" style="width:100%;margin-top:8px" onclick="loginLocal()">Masuk</button>
+    <div style="font-size:12px;color:#9ca9a4;margin-top:15px">Mode cloud akan menggunakan database online agar akun yang sama bisa dipakai di banyak device.</div>
+  </div>
+</div>
+
+<header>
+  <div class="brand">📈 1Milyar.com <span style="float:right;font-size:12px;background:#087b45;padding:7px 10px;border-radius:12px">● Online</span></div>
+  <div class="top">
+    <button class="nav active" onclick="show('home',this)">🏠 Beranda</button>
+    <button class="nav" onclick="show('sales',this)">🛒 Penjualan</button>
+    <button class="nav" onclick="show('buy',this)">📦 Pembelian</button>
+    <button class="nav" onclick="show('stock',this)">📦 Stok</button><button class="nav" onclick="show('settings',this)">⚙️ Pengaturan</button>
+  </div>
+</header>
+<div class="search">☰ <span>🔎</span><input id="search" placeholder="Cari produk, transaksi, pesanan, atau laporan..."> 🔔 👤 <span id="userLabel">Admin</span></div>
+
+<main>
+<section id="home" style="display:block">
+<div class="hero">
+<h1>📈 1MILYAR.COM</h1><p>— Kelola Bisnis, Raih Mimpi —</p>
+<h2>Selamat Datang, Admin!</h2>
+<p>Kelola penjualan, pembelian, stok, pemasukan & pengeluaran dalam satu aplikasi.</p>
+<div class="chips"><span class="chip">✓ Lengkap</span><span class="chip">✓ Akurat</span><span class="chip">↻ Terintegrasi</span><span class="chip">▣ Multi Device</span></div>
+</div>
+<div class="grid">
+<div class="card green"><div class="title">🛒 Total Penjualan</div><div class="value" id="salesTotal">Rp 0</div><div class="sub" id="salesCount">0 transaksi</div></div>
+<div class="card blue"><div class="title">📦 Total Pembelian</div><div class="value" id="buyTotal">Rp 0</div><div class="sub" id="buyCount">0 transaksi</div></div>
+<div class="card purple"><div class="title">🪙 Laba Bersih</div><div class="value" id="profit">Rp 0</div><div class="sub">Penjualan − modal − pengeluaran</div></div>
+<div class="card red"><div class="title">📦 Stok Produk</div><div class="value" id="stockCount">0 Item</div><div class="sub">Pantau stok secara otomatis</div></div>
+</div>
+</section>
+
+<section id="sales">
+<h2>🛒 Penjualan</h2>
+<div class="form">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <div><label>Tanggal</label><input id="sDate" type="date"></div>
+    <div><label>No. Transaksi</label><input id="sNo" placeholder="TRX-001"></div>
+  </div>
+  <label>Marketplace</label>
+  <select id="sMarketplace">
+    <option value="Shopee">Shopee</option>
+    <option value="Tokopedia">Tokopedia</option>
+    <option value="Lazada">Lazada</option>
+    <option value="TikTok Shop">TikTok Shop</option>
+    <option value="Offline">Offline</option>
+    <option value="Lainnya">Lainnya</option>
+  </select>
+
+  <h3>Produk dalam transaksi</h3>
+  <div style="overflow:auto">
+    <table style="width:100%;border-collapse:collapse;min-width:560px">
+      <thead><tr><th style="text-align:left">Produk/Model</th><th>Qty</th><th>Harga Jual</th><th>Total</th><th></th></tr></thead>
+      <tbody id="saleItems"></tbody>
+    </table>
+  </div>
+  <button type="button" class="primary" onclick="addSaleItem()">+ Tambah Produk</button>
+  <div style="margin-top:15px;text-align:right;font-size:20px"><b>Total Transaksi: <span id="saleGrandTotal">Rp 0</span></b></div>
+  <button class="primary" style="width:100%;margin-top:12px" onclick="saveSaleTransaction()">✓ Simpan Transaksi Penjualan</button>
+</div>
+<div class="tablebox" id="salesList">Belum ada data.</div>
+</section>
+
+<section id="buy">
+<h2>📦 Pembelian</h2>
+<div class="form">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <div><label>Tanggal</label><input id="bDate" type="date"></div>
+    <div><label>No. Batch</label><input id="bNo" placeholder="BATCH-001"></div>
+  </div>
+  <label>Supplier</label><input id="bSupplier" placeholder="Nama supplier">
+
+  <h3>Produk dalam batch</h3>
+  <div style="overflow:auto">
+    <table style="width:100%;border-collapse:collapse;min-width:560px">
+      <thead><tr><th style="text-align:left">Produk/Model</th><th>Qty</th><th>Harga Beli</th><th>Total</th><th></th></tr></thead>
+      <tbody id="buyItems"></tbody>
+    </table>
+  </div>
+  <button type="button" class="primary" onclick="addBuyItem()">+ Tambah Produk</button>
+  <div style="margin-top:15px;text-align:right;font-size:20px"><b>Total Batch: <span id="buyGrandTotal">Rp 0</span></b></div>
+  <button class="primary" style="width:100%;margin-top:12px" onclick="saveBuyBatch()">✓ Simpan Batch Pembelian</button>
+</div>
+<div class="tablebox" id="buyList">Belum ada data.</div>
+</section>
+
+
+<section id="settings">
+<h2>⚙️ Pengaturan</h2>
+<div class="form">
+<h3>☁️ Sinkronisasi Multi-Device</h3>
+<p class="sub">Status saat ini: <b id="syncStatus">Belum terhubung ke cloud</b></p>
+<p class="sub">Versi final akan memakai database cloud agar akun yang sama dapat membuka data yang sama di HP, tablet, dan komputer.</p>
+<button class="primary" onclick="alert('Database cloud belum dikonfigurasi. Kita pasang setelah project cloud dibuat.')">Hubungkan Database Cloud</button>
+</div>
+<div class="form">
+<h3>👤 Akun</h3>
+<p class="sub">Aplikasi ini akan memakai login akun untuk memisahkan data setiap pengguna.</p>
+</div>
+</section>
+<section id="stock"><h2>📊 Stok</h2><div class="tablebox" id="stockList">Belum ada stok.</div></section>
+</main>
+
+<div class="bottom">
+<button class="active" onclick="show('home',this)">🏠<br>Beranda</button>
+<button onclick="show('sales',this)">🛒<br>Penjualan</button>
+<button onclick="show('buy',this)">📦<br>Pembelian</button>
+<button onclick="show('stock',this)">📋<br>Stok</button><button onclick="show('settings',this)">⚙️<br>Pengaturan</button>
+<button>💰<br>Dana</button>
+</div>
+
+<script>
+const CLOUD_CONFIG = {
+  // Isi nanti setelah database cloud dibuat.
+  provider: "supabase",
+  url: "",
+  anonKey: ""
+};
+const state=JSON.parse(localStorage.getItem('milyarData')||'{"sales":[],"buy":[],"stock":{}}');
+function loginLocal(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const password=document.getElementById('loginPassword').value;
+  if(!email || !password) return alert('Isi email dan password.');
+  localStorage.setItem('milyarUser', email);
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('userLabel').textContent=email.split('@')[0];
+}
+function initLogin(){
+  const user=localStorage.getItem('milyarUser');
+  if(user){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('userLabel').textContent=user.split('@')[0];
+  }
+}
+const rupiah=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n||0);
+function save(){localStorage.setItem('milyarData',JSON.stringify(state));render()}
+function show(id,el){
+ document.querySelectorAll('main section').forEach(x=>x.style.display='none');
+ document.getElementById(id).style.display='block';
+ document.querySelectorAll('.nav,.bottom button').forEach(x=>x.classList.remove('active'));
+ if(el)el.classList.add('active');
+ render();
+}
+function today(){
+  return new Date().toISOString().slice(0,10);
+}
+function addSaleItem(p="",q=1,price=0){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input class="sale-product" placeholder="Nama / Model" value="${escapeHtml(p)}"></td>
+    <td><input class="sale-qty" type="number" min="1" value="${q}" oninput="updateSaleTotal()"></td>
+    <td><input class="sale-price" type="number" min="0" value="${price}" oninput="updateSaleTotal()"></td>
+    <td class="sale-line">Rp 0</td>
+    <td><button type="button" onclick="this.closest('tr').remove();updateSaleTotal()">✕</button></td>`;
+  saleItems.appendChild(tr);
+  updateSaleTotal();
+}
+function updateSaleTotal(){
+  let total=0;
+  document.querySelectorAll('#saleItems tr').forEach(tr=>{
+    const q=+(tr.querySelector('.sale-qty')?.value||0);
+    const p=+(tr.querySelector('.sale-price')?.value||0);
+    const line=q*p; total+=line;
+    tr.querySelector('.sale-line').textContent=rupiah(line);
+  });
+  saleGrandTotal.textContent=rupiah(total);
+}
+function saveSaleTransaction(){
+  const rows=[...document.querySelectorAll('#saleItems tr')];
+  const items=rows.map(tr=>({
+    p:tr.querySelector('.sale-product').value.trim(),
+    q:+tr.querySelector('.sale-qty').value||0,
+    price:+tr.querySelector('.sale-price').value||0
+  })).filter(x=>x.p && x.q>0 && x.price>=0);
+  if(!items.length)return alert('Tambahkan minimal 1 produk.');
+  const no=sNo.value.trim()||'TRX-'+Date.now();
+  const date=sDate.value||today();
+  const marketplace=sMarketplace.value;
+  const total=items.reduce((a,x)=>a+x.q*x.price,0);
+  state.sales.push({no,date,marketplace,items,total});
+  items.forEach(x=>state.stock[x.p]=(state.stock[x.p]||0)-x.q);
+  save();
+  sNo.value=''; sDate.value=today();
+  saleItems.innerHTML=''; addSaleItem();
+}
+function addBuyItem(p="",q=1,price=0){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input class="buy-product" placeholder="Nama / Model" value="${escapeHtml(p)}"></td>
+    <td><input class="buy-qty" type="number" min="1" value="${q}" oninput="updateBuyTotal()"></td>
+    <td><input class="buy-price" type="number" min="0" value="${price}" oninput="updateBuyTotal()"></td>
+    <td class="buy-line">Rp 0</td>
+    <td><button type="button" onclick="this.closest('tr').remove();updateBuyTotal()">✕</button></td>`;
+  buyItems.appendChild(tr);
+  updateBuyTotal();
+}
+function updateBuyTotal(){
+  let total=0;
+  document.querySelectorAll('#buyItems tr').forEach(tr=>{
+    const q=+(tr.querySelector('.buy-qty')?.value||0);
+    const p=+(tr.querySelector('.buy-price')?.value||0);
+    const line=q*p; total+=line;
+    tr.querySelector('.buy-line').textContent=rupiah(line);
+  });
+  buyGrandTotal.textContent=rupiah(total);
+}
+function saveBuyBatch(){
+  const rows=[...document.querySelectorAll('#buyItems tr')];
+  const items=rows.map(tr=>({
+    p:tr.querySelector('.buy-product').value.trim(),
+    q:+tr.querySelector('.buy-qty').value||0,
+    price:+tr.querySelector('.buy-price').value||0
+  })).filter(x=>x.p && x.q>0 && x.price>=0);
+  if(!items.length)return alert('Tambahkan minimal 1 produk.');
+  const no=bNo.value.trim()||'BATCH-'+Date.now();
+  const date=bDate.value||today();
+  const supplier=bSupplier.value.trim()||'-';
+  const total=items.reduce((a,x)=>a+x.q*x.price,0);
+  state.buy.push({no,date,supplier,items,total});
+  items.forEach(x=>state.stock[x.p]=(state.stock[x.p]||0)+x.q);
+  save();
+  bNo.value=''; bSupplier.value=''; bDate.value=today();
+  buyItems.innerHTML=''; addBuyItem();
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+function render(){
+  const st=state.sales.reduce((a,x)=>a+(x.total||0),0);
+  const bt=state.buy.reduce((a,x)=>a+(x.total||0),0);
+  salesTotal.textContent=rupiah(st);
+  buyTotal.textContent=rupiah(bt);
+  salesCount.textContent=state.sales.length+' transaksi';
+  buyCount.textContent=state.buy.length+' transaksi';
+  profit.textContent=rupiah(st-bt);
+  stockCount.textContent=Object.keys(state.stock).length+' Item';
+
+  salesList.innerHTML=state.sales.length?state.sales.map(x=>{
+    const items=x.items || [{p:x.p||'Produk',q:x.q||0,price:x.price||0}];
+    return `<div style="padding:10px 0">
+      <b>${escapeHtml(x.no)}</b> · ${escapeHtml(x.date||'-')} · <b>${escapeHtml(x.marketplace||'Lainnya')}</b>
+      <br>${items.map(i=>`${escapeHtml(i.p)} (${i.q} × ${rupiah(i.price)})`).join(' · ')}
+      <br><b>Total: ${rupiah(x.total)}</b></div><hr>`;
+  }).join(''):'Belum ada data.';
+
+  buyList.innerHTML=state.buy.length?state.buy.map(x=>{
+    const items=x.items || [{p:x.p||'Produk',q:x.q||0,price:x.price||0}];
+    return `<div style="padding:10px 0">
+      <b>${escapeHtml(x.no)}</b> · ${escapeHtml(x.date||'-')} · Supplier: <b>${escapeHtml(x.supplier||'-')}</b>
+      <br>${items.map(i=>`${escapeHtml(i.p)} (${i.q} × ${rupiah(i.price)})`).join(' · ')}
+      <br><b>Total: ${rupiah(x.total)}</b></div><hr>`;
+  }).join(''):'Belum ada data.';
+
+  stockList.innerHTML=Object.keys(state.stock).length
+    ?Object.entries(state.stock).map(([p,q])=>`<div style="padding:12px 0"><b>${escapeHtml(p)}</b> — ${q} unit</div>`).join('')
+    :'Belum ada stok.';
+}
+
+initLogin();
+sDate.value=today();
+bDate.value=today();
+addSaleItem();
+addBuyItem();
+render();
+</script>
+</body></html>
